@@ -9,7 +9,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import RandomizedSearchCV
 from scipy.stats import randint
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from src.function_build_preprocessor import build_preprocessor
+# from src.function_build_preprocessor import build_preprocessor
 from pynyairbnb.data_preprocessing import create_dir_if_not_exists
 
 def build_clf_model(model, preprocessor, tbl_out_dir, X_train, y_train, X_test, y_test, replacement_dict, clf_report_file_name):

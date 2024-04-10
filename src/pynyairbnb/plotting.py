@@ -9,6 +9,27 @@ import os
 from pynyairbnb.data_preprocessing import create_dir_if_not_exists
 
 def rank_correlations(corr_matrix):
+    """Rank the correlations present in the given correlation matrix, excluding self-correlations.
+
+    This function takes a correlation matrix, flattens it to include only unique pairings of variables, and then sorts these pairs by the absolute value of their correlation in descending order. Finally, it filters out repeated correlations to provide a concise list of the top correlations.
+
+    Parameters
+    ----------
+    corr_matrix : pd.DataFrame
+        A DataFrame representing a correlation matrix where both rows and columns are variables.
+
+    Returns
+    -------
+    pd.DataFrame
+        A DataFrame containing the top 10 unique variable pairings sorted by their absolute correlation value, excluding self-correlations.
+
+    Examples
+    --------
+    >>> import pandas as pd
+    >>> data = pd.DataFrame({"A": [1, 2, 3], "B": [3, 2, 1], "C": [1, 3, 2]})
+    >>> corr_matrix = data.corr()
+    >>> print(rank_correlations(corr_matrix))
+    """
     # flattening matrix
     flattened_matrix = corr_matrix.stack().reset_index()
     #renaming columns
@@ -128,7 +149,32 @@ def sns_plotting(plot_type, data, x='number_of_reviews', y='price', figlength=14
     return fig
 
 def plot_pynyairbnb(input_file, viz_out_dir, tbl_out_dir):
-    """Creates all visualizations + tables and saves them to src/figures or src/tables."""
+    """Creates and saves visualizations and tables for pynyairbnb data analysis.
+
+    This function orchestrates the creation of various plots and tables as part of the data analysis process for the pynyairbnb project. It reads the dataset from the given input file, generates specified visualizations (e.g., heatmaps, scatter plots, box plots), and then saves these figures to the specified output directory for visualizations. It also ranks correlations among variables and saves this information as a table in the specified output directory for tables.
+
+    Parameters
+    ----------
+    input_file : str
+        Path to the dataset CSV file.
+    viz_out_dir : str
+        Output directory to save the generated figures.
+    tbl_out_dir : str
+        Output directory to save the generated tables.
+
+    Returns
+    -------
+    None
+
+    Examples
+    --------
+    >>> plot_pynyairbnb('data/raw/airbnb_data_nyc.csv', 'data/figures', 'data/tables')
+    
+    Notes
+    -----
+    - This function assumes that the input file is a CSV containing the required columns for the specified visualizations and tables.
+    - The directories specified by `viz_out_dir` and `tbl_out_dir` will be created if they do not already exist, using the `create_dir_if_not_exists` function.
+    """
     
     create_dir_if_not_exists(viz_out_dir)
     create_dir_if_not_exists(tbl_out_dir)

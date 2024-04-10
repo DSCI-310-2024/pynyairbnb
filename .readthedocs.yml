@@ -21,7 +21,9 @@ build:
       # Install dependencies with 'docs' dependency group
       # https://python-poetry.org/docs/managing-dependencies/#dependency-groups
       - poetry install
-      
+      - pip install myst-nb
+      - pip install sphinx-autoapi
+      - pip install sphinx-rtd-theme
 # Build documentation in the "docs/" directory with Sphinx
 sphinx:
   configuration: docs/conf.py
