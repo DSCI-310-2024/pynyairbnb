@@ -1,0 +1,11 @@
+Variable_1,Variable_2,Correlation
+reviews_per_month,number_of_reviews_ltm,0.8658494365540682
+reviews_per_month,number_of_reviews,0.6750703798164277
+number_of_reviews,number_of_reviews_ltm,0.6370732076139469
+host_id,id,0.4634728617030471
+id,availability_365,0.3378655203878008
+host_id,availability_365,0.266699157262326
+id,number_of_reviews,-0.22387929197260226
+id,calculated_host_listings_count,0.17316556275768089
+calculated_host_listings_count,availability_365,0.14141141587141098
+host_id,reviews_per_month,0.1408213848734252
