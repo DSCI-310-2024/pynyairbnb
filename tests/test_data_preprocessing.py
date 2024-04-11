@@ -7,7 +7,13 @@ from pynyairbnb.data_preprocessing import create_dir_if_not_exists, read_data, c
 
 def test_create_dir_if_not_exists(tmpdir):
     """
-    Test that a directory is created if it doesn't exist.
+    Test whether a new directory is created when it does not already exist.
+    
+    Args:
+    tmpdir (py.path.local): A pytest fixture that provides a temporary directory unique to the test invocation.
+    
+    Asserts:
+    That the directory is actually created and exists on the filesystem.
     """
     # tmpdir is a pytest fixture that provides a temporary directory unique to the test invocation
     new_dir = tmpdir.mkdir("sub").join("newdir")
@@ -16,7 +22,13 @@ def test_create_dir_if_not_exists(tmpdir):
 
 def test_read_data(tmpdir):
     """
-    Test that data is correctly read and saved.
+    Ensure that data is correctly downloaded and saved to a local directory from a specified URL.
+    
+    Args:
+    tmpdir (py.path.local): Temporary directory provided by pytest for file operations.
+    
+    Asserts:
+    That the file is saved to the expected path.
     """
     # Prepare
     out_dir = tmpdir
@@ -47,7 +59,10 @@ def mock_data():
 
 def test_convert_missing_values():
     """
-    Test that missing values are correctly converted.
+    Test the conversion of missing values in a DataFrame, including the transformation of numerical IDs to string type and the handling of NaNs.
+    
+    Asserts:
+    That no NaN values remain in the DataFrame and that ID columns are correctly converted to string type.
     """
     df = pd.DataFrame({'id': [1, None], 'host_id': [None, 2], 'reviews_per_month': [3.0, None]})
     converted_df = convert_missing_values(df)
@@ -58,7 +73,10 @@ def test_convert_missing_values():
 
 def test_split_data():
     """
-    Test data splitting functionality.
+    Validate the functionality of splitting a DataFrame into training and testing subsets.
+    
+    Asserts:
+    That both train and test DataFrames are non-empty and together account for all the data in the original DataFrame.
     """
     df = pd.DataFrame({'col1': [1, 2, 3], 'col2': [4, 5, 6]})
     train, test = split_data(df)
@@ -67,7 +85,13 @@ def test_split_data():
 
 def test_save_dataframes(tmpdir):
     """
-    Test that dataframes are correctly saved to specified directory.
+    Test the functionality to save multiple DataFrame splits to specified files within a directory.
+    
+    Args:
+    tmpdir (py.path.local): Temporary directory for saving files.
+    
+    Asserts:
+    That all specified files are correctly saved in the directory.
     """
     # Prepare
     out_dir = tmpdir
@@ -84,7 +108,10 @@ def test_save_dataframes(tmpdir):
 
 def test_add_price_category():
     """
-    Test that price categories are correctly added to dataframe.
+    Test the addition of a 'price_category' column to a DataFrame based on predefined price ranges.
+    
+    Asserts:
+    That the 'price_category' column is added and contains correct categorical labels based on the price values.
     """
     df = pd.DataFrame({'price': [25, 75, 125, 175, 225, 275, 325, 375]})
     expected_categories = ['0-50', '50-100', '100-150', '150-200', '200-250', '250-300', '300-350', '350+']
@@ -92,13 +119,28 @@ def test_add_price_category():
     
     assert 'price_category' in result_df.columns, "price_category column not added"
     assert all(result_df['price_category'] == expected_categories), "Price categories do not match expected values"
+    
 def test_add_price_category_spanning_all_ranges():
+    """
+    Test the functionality of the add_price_category function to ensure it correctly assigns price categories 
+    that span across all predefined ranges from negative values to above the highest specified bin.
+
+    Asserts:
+    That the 'price_category' column is accurately categorized for a range of values covering the entire spectrum 
+    from negative to above the maximum set bin.
+    """
     data = pd.DataFrame({'price': [-10, 25, 75, 125, 175, 225, 275, 325, 375]})
     result = add_price_category(data)
     expected_categories = ['0-50', '0-50', '50-100', '100-150', '150-200', '200-250', '250-300', '300-350', '350+']
     assert all(result['price_category'] == expected_categories), "Test failed: Prices spanning all ranges are not categorized correctly."
 
 def test_add_price_category_single_category():
+    """
+    Verify that the add_price_category function correctly categorizes multiple entries within the same price range.
+
+    Asserts:
+    That all prices within a narrow range are consistently categorized and match the expected categorical data type.
+    """
     data = pd.DataFrame({'price': [100, 105, 110]})
     result = add_price_category(data)
     # Ensure the expected_series has the same categories and order as the result
@@ -108,34 +150,70 @@ def test_add_price_category_single_category():
     pd.testing.assert_series_equal(result['price_category'], expected_series, check_categorical=True)
 
 def test_add_price_category_empty_dataframe():
+    """
+    Ensure that the add_price_category function handles an empty DataFrame without errors and returns an empty DataFrame.
+
+    Asserts:
+    That an empty input DataFrame results in an empty output DataFrame.
+    """
     data = pd.DataFrame({'price': []})
     result = add_price_category(data)
     assert result.empty, "Test failed: The function should return an empty DataFrame when provided with one."
 
 
 def test_add_price_category_with_negative_prices():
+    """
+    Test the add_price_category function with negative price values to ensure they are categorized in the lowest price range.
+
+    Asserts:
+    That negative prices are treated as the lowest category, ensuring robustness in categorization logic.
+    """
     data = pd.DataFrame({'price': [-1, -20]})
     result = add_price_category(data)
     assert all(result['price_category'] == ['0-50', '0-50']), "Test failed: Negative prices are not categorized correctly."
 
 def test_add_price_category_with_floats():
+    """
+    Verify that the add_price_category function accurately categorizes prices expressed as floats into the correct price ranges.
+
+    Asserts:
+    That prices just below and just above price range boundaries are categorized correctly, demonstrating precision in boundary conditions.
+    """
     data = pd.DataFrame({'price': [49.99, 100.01]})
     result = add_price_category(data)
     assert all(result['price_category'] == ['0-50', '100-150']), "Test failed: Float prices are not categorized correctly."
 
 def test_add_price_category_with_boundary_prices():
+    """
+    Confirm that the add_price_category function correctly categorizes prices at the exact boundary points of the predefined price ranges.
+
+    Asserts:
+    That boundary prices are included in the correct categories, important for ensuring accuracy at range transitions.
+    """
     data = pd.DataFrame({'price': [50, 100, 150, 200, 250, 300, 350]})
     result = add_price_category(data)
     expected_categories = ['0-50', '50-100', '100-150', '150-200', '200-250', '250-300', '300-350']
     assert all(result['price_category'] == expected_categories), "Test failed: Boundary prices are not categorized correctly."
 
 def test_add_price_category_preserves_dtype():
+    """
+    Test that the add_price_category function preserves the original data types of existing columns when adding a new category column.
+
+    Asserts:
+    That no data type alterations occur in the original DataFrame columns after adding the category, ensuring data integrity.
+    """
     data = pd.DataFrame({'price': [25, 75], 'other_column': [1, 2]})
     original_dtype = data.dtypes
     result = add_price_category(data)
     assert data.drop(columns=['price_category']).dtypes.equals(original_dtype), "Test failed: Original data types are altered."
 
 def test_invalid_data_formats(mock_data, tmp_path):
+    """
+    Test the data preprocessing tool's ability to handle data frames with invalid data formats, ensuring robust error handling.
+
+    Asserts:
+    That the system appropriately fails when encountering data that cannot be properly formatted or processed.
+    """
     with warnings.catch_warnings():
         # Filter out the specific UserWarning
         warnings.filterwarnings("ignore", message="Pandas doesn't allow columns to be created via a new attribute name", category=UserWarning)
@@ -153,6 +231,12 @@ def test_invalid_data_formats(mock_data, tmp_path):
 
 
 def test_price_categorization_logic():
+    """
+    Test the logical consistency of the price categorization in the add_price_category function with a predefined set of price inputs.
+
+    Asserts:
+    That the price categories assigned are consistent with expected output for a given range of test prices.
+    """
     mock_df = pd.DataFrame({
         'price': [75, 150, 225, 300]
     })
@@ -162,6 +246,12 @@ def test_price_categorization_logic():
 
     
 def test_data_splitting_proportions(mock_data):
+    """
+    Verify that the data splitting function accurately splits data into training and testing datasets according to specified proportions.
+
+    Asserts:
+    That the proportions of the split approximately match the expected 80-20 training-testing ratio, validating the splitting logic.
+    """
     train_df, test_df = split_data(mock_data)
     total_len = len(mock_data)
     train_len = len(train_df)
