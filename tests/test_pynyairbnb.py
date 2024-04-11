@@ -91,3 +91,37 @@ def test_build_clf_model():
 
     os.remove(os.path.join(tbl_out_dir, clf_report_file_name))
     os.rmdir(tbl_out_dir)
+    
+    
+
+def test_knn_param_optimization(tmp_path, setup_data):
+    """_summary_
+    Tests the output of the knn_param_optimization file
+    Args:
+        tmp_path (_type_): A temporary file path
+        setup_data (_type_): Set up data pytest fixture to help with running test
+    """
+
+    X_train, y_train, X_test, y_test = setup_data
+    knn_model = KNeighborsClassifier()
+    tbl_out_dir = tmp_path  # Temporary directory
+    replacement_dict = {'0': 'Class_0', '1': 'Class_1'}
+    output_file_name = 'test_hyperparam_report.csv'
+
+    param_dist = {
+        'n_neighbors': randint(1, 5),
+    }
+    
+    # Execute the function under test
+    knn_param_optimization(knn_model, str(tbl_out_dir), X_train, y_train, X_test, y_test, replacement_dict, output_file_name,param_dist)
+
+    # Validate the output file's existence
+    output_file_path = tbl_out_dir / output_file_name
+    assert output_file_path.is_file(), "Output file was not created."
+
+
+    df_output = pd.read_csv(output_file_path)
+    assert not df_output.empty, "Output file is unexpectedly empty."
+    
+    os.remove(output_file_path)
+    
