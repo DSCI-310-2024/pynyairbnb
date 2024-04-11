@@ -38,7 +38,10 @@ jobs:
           slug: DSCI-310-2024/pynyairbnb
 
       - name: Build documentation
-        run: poetry run make html --directory docs/
+        # run: poetry run make html --directory docs/ 
+        run: |
+          cd docs
+          poetry run make html
 
   cd:
     permissions:
