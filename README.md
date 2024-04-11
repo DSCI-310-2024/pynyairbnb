@@ -2,6 +2,8 @@
 
 A package for DSCI 310 Group's Airbnb Analysis.
 
+[![codecov](https://codecov.io/gh/rashiselarka/pycounts_rms/graph/badge.svg?token=RCHLOWYMMI)](https://codecov.io/gh/rashiselarka/pycounts_rms)
+
 ## Installation
 
 ```bash
