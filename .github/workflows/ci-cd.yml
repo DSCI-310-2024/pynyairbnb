@@ -35,7 +35,7 @@ jobs:
         uses: codecov/codecov-action@v4.0.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          slug: rashiselarka/pycounts_rms
+          slug: DSCI-310-2024/pynyairbnb
 
       - name: Build documentation
         run: poetry run make html --directory docs/
