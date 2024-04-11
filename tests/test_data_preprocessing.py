@@ -1,11 +1,9 @@
 import os
 import pandas as pd
-import sys
 import pytest
 import warnings
 from click.testing import CliRunner
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from src.pynyairbnb.data_preprocessing import create_dir_if_not_exists, read_data, convert_missing_values, split_data, save_dataframes, add_price_category, data_preprocessing
+from pynyairbnb.data_preprocessing import create_dir_if_not_exists, read_data, convert_missing_values, split_data, save_dataframes, add_price_category, data_preprocessing
 
 def test_create_dir_if_not_exists(tmpdir):
     """

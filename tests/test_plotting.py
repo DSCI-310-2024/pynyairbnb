@@ -1,10 +1,7 @@
 import pandas as pd
 import matplotlib
 import pytest
-import os
-import sys
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from src.pynyairbnb.plotting import sns_plotting
+from pynyairbnb.plotting import sns_plotting
 
 # Same Data to be used for all tests
 data = pd.DataFrame({"price": [25, 75, 125, 175, 225, 275, 325, 375],
