@@ -81,10 +81,13 @@ def convert_missing_values(data):
     1   2       2                0.0
     2  NaN       3                2.0
     """
-
-    data['id'] = data['id'].astype(str)
-    data['host_id'] = data['host_id'].astype(str)
-    data['reviews_per_month'] = data['reviews_per_month'].fillna(0)
+    
+    if data is None or data.empty:
+        pass
+    else:
+        data['id'] = data['id'].astype(str)
+        data['host_id'] = data['host_id'].astype(str)
+        data['reviews_per_month'] = data['reviews_per_month'].fillna(0)
     return data
 
 def split_data(data):
@@ -221,7 +224,7 @@ def data_preprocessing(input_path, out_dir):
     """
     create_dir_if_not_exists(out_dir)
 
-    data = read_data(input_path)
+    data = read_data(input_path, out_dir)
     data = convert_missing_values(data)
     train_df, test_df = split_data(data)
     train_df = add_price_category(train_df)

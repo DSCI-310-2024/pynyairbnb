@@ -4,13 +4,46 @@ import sys
 from sklearn.pipeline import make_pipeline
 from sklearn.dummy import DummyClassifier
 from sklearn.metrics import classification_report
+from sklearn.compose import make_column_transformer
 from sklearn.preprocessing import OrdinalEncoder
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import RandomizedSearchCV
 from scipy.stats import randint
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 # from src.function_build_preprocessor import build_preprocessor
 from pynyairbnb.data_preprocessing import create_dir_if_not_exists
+
+def build_preprocessor(numerical_data, text_data, categorical_data):
+    """_summary_
+    Builds a preprocessor for numerical, text, and categorical data with the following transformations: Standard scaler, One hot encoding, and count Vectorizer
+    Args:
+        numerical_data (_type_): numeric data
+        text_data (_type_): text data 
+        categorical_data (_type_): cateogorical data 
+
+    Returns:
+        _type_: _description_
+    """
+    # Numerical Transformer
+    numerical_transformer = StandardScaler()
+
+    # Categorical Transformer
+    categorical_transformer = OneHotEncoder(handle_unknown='ignore')
+
+    # Text Data Transformer
+    text_transformer = CountVectorizer()
+    
+    # Making Our Preprocessor
+    preprocessor = make_column_transformer(
+        (numerical_transformer, numerical_data),
+        (categorical_transformer, categorical_data),
+        (text_transformer, text_data),
+        remainder='drop'
+    )
+    
+    return preprocessor
 
 def build_clf_model(model, preprocessor, tbl_out_dir, X_train, y_train, X_test, y_test, replacement_dict, clf_report_file_name):
     """_summary_
