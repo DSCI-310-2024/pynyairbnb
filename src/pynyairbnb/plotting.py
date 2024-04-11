@@ -201,13 +201,18 @@ def plot_pynyairbnb(input_file, viz_out_dir, tbl_out_dir):
     ax2[0].set_title('Distribution of Listings by Location and Price')
     ax2[0].set(xlabel='Longitude', ylabel='Latitude')
 
-    img = mpimg.imread('src/images/New_York_City_Map.jpg')
+    img_path = 'src/images/New_York_City_Map.jpg'
+    try:
+        img = mpimg.imread(img_path)
 
-    ax2[1].imshow(img)
-    ax2[1].set_title('Map of New York City')
-    ax2[1].axis("off")
+        ax2[1].imshow(img)
+        ax2[1].set_title('Map of New York City')
+        ax2[1].axis("off")
 
-    fig2.savefig(os.path.join(viz_out_dir, 'listing_locations.jpg'))
+        fig2.savefig(os.path.join(viz_out_dir, 'listing_locations.jpg'))
+    
+    except FileNotFoundError:
+        print("Image file not found. Please check the file path.")
 
     # Fig. 3 Price vs Number of Reviews Coloured by Room Type Scatterplot
     

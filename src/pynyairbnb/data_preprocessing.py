@@ -40,7 +40,8 @@ def read_data(data_url, out_dir):
 
     Returns
     -------
-    None
+    pd.DataFrame
+        The DataFrame of the raw data.
 
     Examples
     --------
@@ -52,6 +53,7 @@ def read_data(data_url, out_dir):
 
     data = pd.read_csv(data_url)
     data.to_csv(os.path.join(out_dir, 'airbnb_data_2023.csv'), index=False)
+    return data
 
 def convert_missing_values(data):
     """Fill missing values in specific columns and convert certain columns to string type.
