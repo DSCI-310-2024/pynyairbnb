@@ -11,8 +11,7 @@ import numpy as np
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.datasets import make_classification
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from src.pynyairbnb.pynyairbnb import build_preprocessor, build_clf_model, knn_param_optimization, nyairbnb_analysis
+from pynyairbnb.pynyairbnb import build_preprocessor, build_clf_model, knn_param_optimization, nyairbnb_analysis
 
 
 def test_preprocessor_type():
