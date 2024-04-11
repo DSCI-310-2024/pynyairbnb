@@ -27,12 +27,12 @@ jobs:
         run: poetry run pytest tests/ --cov=pynyairbnb --cov-report=xml
 
       - name: Use Codecov to track coverage
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
           files: ./coverage.xml   # coverage report
 
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v4.0.1
+        uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: DSCI-310-2024/pynyairbnb
