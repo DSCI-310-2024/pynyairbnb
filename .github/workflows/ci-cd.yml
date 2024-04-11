@@ -31,6 +31,12 @@ jobs:
         with:
           files: ./coverage.xml   # coverage report
 
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4.0.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: rashiselarka/pycounts_rms
+
       - name: Build documentation
         run: poetry run make html --directory docs/
 
