@@ -201,7 +201,7 @@ def plot_pynyairbnb(input_file, viz_out_dir, tbl_out_dir):
     ax2[0].set_title('Distribution of Listings by Location and Price')
     ax2[0].set(xlabel='Longitude', ylabel='Latitude')
 
-    img_path = 'pynyairbnb/images/New_York_City_Map.jpg'
+    img_path = 'src/images/New_York_City_Map.jpg'
     try:
         img = mpimg.imread(img_path)
 
