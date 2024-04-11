@@ -32,16 +32,16 @@ jobs:
           files: ./coverage.xml   # coverage report
 
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v3 # changing version
+        uses: codecov/codecov-action@v4.0.1 # changing version
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: DSCI-310-2024/pynyairbnb
 
       - name: Build documentation
-        # run: poetry run make html --directory docs/ 
-        run: |
-          cd docs
-          poetry run make html
+        run: poetry run make html --directory docs/ 
+        # run: |
+        #   cd docs
+        #   poetry run make html
 
   cd:
     permissions:
