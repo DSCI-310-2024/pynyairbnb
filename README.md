@@ -45,6 +45,9 @@ This package also utilizes New York City Airbnb Open Data from [insideairbnb.com
 ## Contributors
 
 Rashi Selarka
+
 Riddhi Battu
+
 Oliver Gullery
+
 Prithvi Sureka
