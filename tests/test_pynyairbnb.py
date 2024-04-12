@@ -1,5 +1,6 @@
 import sys
 import os
+import pytest
 from sklearn.dummy import DummyClassifier
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import make_pipeline
@@ -7,6 +8,7 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.neighbors import KNeighborsClassifier
 import pandas as pd
+from tempfile import TemporaryDirectory
 import numpy as np
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
@@ -33,6 +35,10 @@ def test_transformer_assignment():
     assert transformers.get('countvectorizer') == CountVectorizer
 
 def test_preprocessor():
+    """_summary_
+    Tests the functionality of build preprocessor method
+    
+    """
     # Create an artificial dataset
     np.random.seed(0)  # For reproducibility
     data = pd.DataFrame({
@@ -73,6 +79,9 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 
 
 def test_build_clf_model():
+    """_summary_
+    Tests the build clf model and ensures output file is correctly created
+    """
     preprocessor = StandardScaler()
     model = KNeighborsClassifier()
     tbl_out_dir = "./test_outputs"
@@ -91,3 +100,54 @@ def test_build_clf_model():
 
     os.remove(os.path.join(tbl_out_dir, clf_report_file_name))
     os.rmdir(tbl_out_dir)
+    
+def test_clf_model_inputs():
+    """_summary_
+    Ensures that running the build_clf function function with the incorrect inputs leads to a type error
+    """
+    with pytest.raises(TypeError):
+        clf_model = build_clf_model("faulty_value", "faulty_input", "faulty_input", X_train, y_train, X_test, y_test, "test", "test_name")
+        
+def test_empty_datasets():
+    """_summary_
+    Ensures that if model is run with empty data sets, it raises a value error
+    """
+    with TemporaryDirectory() as temp_dir:
+        with pytest.raises(ValueError):
+            build_clf_model(KNeighborsClassifier(), StandardScaler(), temp_dir, 
+                            pd.DataFrame(), pd.Series(), pd.DataFrame(), pd.Series(),
+                            {}, 'test_report.csv')
+
+def test_invalid_data_types():
+    """_summary_
+    Tests that model runs into value error if invalid datatypes are entered
+    """
+    with TemporaryDirectory() as temp_dir:
+        with pytest.raises(ValueError):
+            build_clf_model(KNeighborsClassifier(), StandardScaler(), temp_dir, 
+                            [0, 1], [0, 1], [1, 0], [1, 0],
+                            {}, 'test_report.csv')
+
+def test_data_with_missing_values():
+    """_summary_
+    Ensures function raises value error for missing values 
+    """
+    X_train = pd.DataFrame({'feature1': [np.nan, 1], 'feature2': [1, 0]})
+    y_train = pd.Series([0, 1])
+    X_test = pd.DataFrame({'feature1': [1, 0], 'feature2': [0, 1]})
+    y_test = pd.Series([1, 0])
+    with TemporaryDirectory() as temp_dir:
+        with pytest.raises(ValueError):
+            build_clf_model(KNeighborsClassifier(), StandardScaler(), temp_dir, 
+                            X_train, y_train, X_test, y_test,
+                            {}, 'test_report.csv')
+
+def test_invalid_path():
+    """_summary_
+    Ensures value error is raised if an invalid file path is input 
+    """
+    with pytest.raises(ValueError):
+        build_clf_model(KNeighborsClassifier(), StandardScaler(), '/invalid/path', 
+                        pd.DataFrame({'feature1': [0, 1], 'feature2': [1, 0]}), pd.Series([0, 1]),
+                        pd.DataFrame({'feature1': [1, 0], 'feature2': [0, 1]}), pd.Series([1, 0]),
+                        {}, 'test_report.csv')
