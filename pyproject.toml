@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pynyairbnb"
-version = "0.1.0"
+version = "0.2.0"
 description = "A package for DSCI 310 Group's Airbnb Analysis."
 authors = ["DSCI 310 Group 9"]
 license = "MIT"
