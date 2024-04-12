@@ -49,14 +49,6 @@ def mock_data():
         'price_category': ['0-50', '50-100', '100-150', '150-200', '200-250', '250-300', '300-350', '350+', '350+', '350+']
     })
 
-# def test_preprocess_data(mock_data, tmpdir):
-#     csv_path = os.path.join(tmpdir, "mock_data.csv")
-#     mock_data.to_csv(csv_path, index=False)
-#     processed_data = data_preprocessing(csv_path, tmpdir)
-#     assert all(processed_data['id'].apply(lambda x: isinstance(x, str)))
-#     assert all(processed_data['host_id'].apply(lambda x: isinstance(x, str)))
-#     assert 'reviews_per_month' in processed_data.columns
-
 def test_convert_missing_values():
     """
     Test the conversion of missing values in a DataFrame, including the transformation of numerical IDs to string type and the handling of NaNs.
@@ -259,24 +251,3 @@ def test_data_splitting_proportions(mock_data):
     # Check if the proportions approximately match the expected 80-20 split
     assert train_len / total_len == pytest.approx(0.8, 0.05)
     assert test_len / total_len == pytest.approx(0.2, 0.05)
-
-# def test_data_preprocessing(tmpdir):
-#     """
-#     Test the end-to-end data preprocessing functionality.
-#     """
-#     # Setup - Create a sample CSV file in tmpdir
-#     sample_data = pd.DataFrame({'price': [25, 75, 375], 'reviews_per_month': [1, 2, None]})
-#     sample_data_path = tmpdir.join("sample_data.csv")
-#     sample_data.to_csv(str(sample_data_path), index=False)
-    
-#     processed_data_dir = tmpdir
-#     input_path = str(sample_data_path)
-#     out_dir = str(processed_data_dir)
-
-#     # Execute
-#     data_preprocessing(input_path, out_dir)
-
-#     # Validate - Check if processed files exist
-#     for filename in ['train_df.csv', 'test_df.csv', 'X_train.csv', 'y_train.csv', 'X_test.csv', 'y_test.csv']:
-#         saved_file = os.path.join(out_dir, filename)
-#         assert os.path.exists(saved_file), f"{filename} was not processed or saved correctly"
