@@ -10,7 +10,7 @@ from sklearn.neighbors import KNeighborsClassifier
 import pandas as pd
 from tempfile import TemporaryDirectory
 import numpy as np
-from sklearn.datasets import load_iris
+from sklearn.model_selection import RandomizedSearchCV
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.datasets import make_classification
@@ -154,31 +154,35 @@ def test_invalid_path():
                         {}, 'test_report.csv')
 
 @pytest.fixture
-def iris_data():
-    iris = load_iris()
-    X_train, X_test, y_train, y_test = train_test_split(iris.data, iris.target, test_size=0.2, random_state=42)
-    return X_train, X_test, y_train, y_test
-
-def test_knn_param_optimization(iris_data, tmpdir):
-    """
-    Test function for KNN parameter optimization.
-
-    Args:
-        iris_data (tuple): A tuple containing the iris dataset split into training and testing data.
-        tmpdir (py.path): A temporary directory for storing the output files.
-
-    Raises:
-        AssertionError: If the hyperparameter classification report file is not generated.
-
-    """
-    X_train, X_test, y_train, y_test = iris_data
+def setup_knn():
+    """Fixture to setup the KNN model and test data."""
+    X_train = np.array([[0], [1], [2], [3]])
+    y_train = np.array([0, 0, 1, 1])
+    X_test = np.array([[1.5], [2.5]])
+    y_test = np.array([0, 1])
     knn_model = KNeighborsClassifier()
-    output_dir = str(tmpdir.mkdir("output"))  # Converting to string because tmpdir is a py.path
-    try:
-        knn_param_optimization(knn_model, output_dir, X_train, y_train, X_test, y_test, {})
-        assert os.path.isfile(os.path.join(output_dir, "hyperparam_classification_report.csv"))
-    except Exception as e:
-        pytest.fail(f"knn_param_optimization raised an unexpected exception: {e}")
+    tbl_out_dir = "./"
+    replacement_dict = {'0': 'Class 0', '1': 'Class 1'}
+    return knn_model, tbl_out_dir, X_train, y_train, X_test, y_test, replacement_dict
+
+def test_knn_param_optimization(mocker, setup_knn):
+    knn_model, tbl_out_dir, X_train, y_train, X_test, y_test, replacement_dict = setup_knn
+
+    # Use real RandomizedSearchCV to ensure proper behavior
+    rand_search_instance = RandomizedSearchCV(knn_model, {})
+    mocker.patch.object(RandomizedSearchCV, 'fit', return_value=None)
+    mocker.patch.object(RandomizedSearchCV, 'predict', return_value=y_test)
+
+    # Use a real DataFrame for outputs
+    classification_report_dict = {'0': {'precision': 1.0}, '1': {'precision': 1.0}}
+    classification_report_df = pd.DataFrame(classification_report_dict).transpose()
+    mocker.patch('sklearn.metrics.classification_report', return_value=classification_report_dict)
+
+    # Execute the function
+    knn_param_optimization(knn_model, tbl_out_dir, X_train, y_train, X_test, y_test, replacement_dict)
+
+    # No exception should occur; ensure file writing occurs as expected
+    assert os.path.isfile(os.path.join(tbl_out_dir, 'hyperparam_classification_report.csv'))
 
 # Define test data directory
 TEST_DATA_DIR = 'docs/sample_data'

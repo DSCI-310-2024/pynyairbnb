@@ -96,9 +96,9 @@ def knn_param_optimization(knn_model, tbl_out_dir, X_train, y_train, X_test, y_t
     """
     # KNN Hyperparameter Optimization
     param_dist = {
-        'n_neighbors': randint(1, 30),
-        'weights': ['uniform', 'distance'],
-        'p': [1, 2]  
+    'kneighborsclassifier__n_neighbors': randint(1, 30),
+    'kneighborsclassifier__weights': ['uniform', 'distance'],
+    'kneighborsclassifier__p': [1, 2]
     }
 
     try:
