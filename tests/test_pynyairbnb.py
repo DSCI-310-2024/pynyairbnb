@@ -14,7 +14,7 @@ from sklearn.datasets import load_iris
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.datasets import make_classification
-from pynyairbnb.pynyairbnb import build_preprocessor, build_clf_model, knn_param_optimization, nyairbnb_analysis
+from pynyairbnb.pynyairbnb import build_preprocessor, build_clf_model, knn_param_optimization, nyairbnb_analysis, create_dir_if_not_exists
 
 
 def test_preprocessor_type():
@@ -160,6 +160,17 @@ def iris_data():
     return X_train, X_test, y_train, y_test
 
 def test_knn_param_optimization(iris_data, tmpdir):
+    """
+    Test function for KNN parameter optimization.
+
+    Args:
+        iris_data (tuple): A tuple containing the iris dataset split into training and testing data.
+        tmpdir (py.path): A temporary directory for storing the output files.
+
+    Raises:
+        AssertionError: If the hyperparameter classification report file is not generated.
+
+    """
     X_train, X_test, y_train, y_test = iris_data
     knn_model = KNeighborsClassifier()
     output_dir = str(tmpdir.mkdir("output"))  # Converting to string because tmpdir is a py.path
@@ -201,3 +212,127 @@ def input_data(tmpdir):
         os.system(f'cp {src_path} {dst_path}')
     
     return tmp_input_dir
+
+def test_classification_report_save_failure(mocker):
+    """
+    Test case to verify that an exception is raised when saving the classification report fails due to a permission error.
+    """
+    mocker.patch('pandas.DataFrame.to_csv', side_effect=PermissionError("Permission denied"))
+    
+    with pytest.raises(PermissionError) as excinfo:
+        build_clf_model(KNeighborsClassifier(), StandardScaler(), '/protected/path',
+                        X_train, y_train, X_test, y_test, {}, 'test_report.csv')
+    assert "Permission denied" in str(excinfo.value)
+
+def test_with_corrupted_csv_data(mocker):
+    """
+    Test case to check the behavior of nyairbnb_analysis function when the CSV data is corrupted.
+
+    Args:
+        mocker: The mocker object used for patching the pandas.read_csv function.
+
+    Raises:
+        pd.errors.ParserError: If the CSV data is corrupted.
+
+    Returns:
+        None
+    """
+    mocker.patch('pandas.read_csv', side_effect=pd.errors.ParserError("Corrupted data"))
+
+    with pytest.raises(pd.errors.ParserError) as excinfo:
+        nyairbnb_analysis('input_dir', 'output_dir')
+    assert "Corrupted data" in str(excinfo.value)
+
+def test_directory_creation_failure(mocker):
+    """
+    Test case to verify the handling of directory creation failure.
+
+    This test mocks the 'os.makedirs' function to raise a 'PermissionError' exception
+    with the message 'Permission denied'. It then calls the 'create_dir_if_not_exists'
+    function with a protected path and asserts that the raised exception contains the
+    expected error message.
+
+    Args:
+        mocker: The mocker object from the pytest-mock library.
+
+    Raises:
+        AssertionError: If the directory creation permission error is not handled correctly.
+
+    """
+    mocker.patch('os.makedirs', side_effect=PermissionError("Permission denied"))
+    with pytest.raises(PermissionError) as excinfo:
+        create_dir_if_not_exists('/protected/path')
+    assert "Permission denied" in str(excinfo.value), "Did not handle directory creation permission error correctly"
+
+def test_model_training_failure(mocker):
+    """
+    Test case to verify that model training failure is handled correctly.
+
+    Args:
+        mocker: The mocker object used for patching the 'fit' method of sklearn.pipeline.Pipeline.
+
+    Raises:
+        Exception: If the model training fails.
+
+    Returns:
+        None
+    """
+    mocker.patch('sklearn.pipeline.Pipeline.fit', side_effect=Exception("Training failed"))
+    with pytest.raises(Exception) as excinfo:
+        build_clf_model(KNeighborsClassifier(), make_pipeline(StandardScaler()), 'output_dir',
+                        X_train, y_train, X_test, y_test, {}, 'test_report.csv')
+    assert "Training failed" in str(excinfo.value), "Model training failure not handled"
+
+def test_invalid_input_path(mocker):
+    """
+    Test case to verify the behavior when an invalid input path is provided.
+    It mocks the 'pandas.read_csv' function to raise a FileNotFoundError and checks if the correct exception is raised.
+
+    Args:
+        mocker: The mocker object used for mocking the 'pandas.read_csv' function.
+
+    Raises:
+        FileNotFoundError: If the input file path does not exist.
+
+    Returns:
+        None
+    """
+    mocker.patch('pandas.read_csv', side_effect=FileNotFoundError("File not found"))
+    with pytest.raises(FileNotFoundError) as excinfo:
+        nyairbnb_analysis('/non/existent/path', 'output_dir')
+    assert "File not found" in str(excinfo.value), "Did not handle non-existent file path correctly"
+
+def test_knn_param_optimization_success(mocker):
+    """
+    Test case for successful parameter optimization of KNN model.
+
+    Args:
+        mocker: The mocker object for patching methods.
+
+    Raises:
+        AssertionError: If an unexpected failure occurs during parameter optimization.
+
+    """
+    random_predictions = np.random.randint(0, 2, size=len(y_test))
+    mocker.patch('sklearn.model_selection.RandomizedSearchCV.fit', return_value=None)
+    mocker.patch('sklearn.model_selection.RandomizedSearchCV.predict', return_value=random_predictions)
+
+    try:
+        knn_model = KNeighborsClassifier()
+        knn_param_optimization(knn_model, 'output_dir', X_train, y_train, X_test, y_test, {})
+    except Exception as e:
+        pytest.fail(f"Unexpected failure during parameter optimization: {e}")
+
+def test_classification_report_output(mocker):
+    """
+    Test function to verify if the classification report is outputted correctly.
+
+    Args:
+        mocker: The mocker object used for patching the 'pandas.DataFrame.to_csv' method.
+
+    Returns:
+        None
+    """
+    mock_to_csv = mocker.patch('pandas.DataFrame.to_csv')
+    build_clf_model(KNeighborsClassifier(), StandardScaler(), 'output_dir', X_train, y_train, X_test, y_test, {}, 'test_report.csv')
+    mock_to_csv.assert_called_once_with(os.path.join('output_dir', 'test_report.csv'))
