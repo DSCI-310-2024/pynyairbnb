@@ -2,6 +2,13 @@
 
 
 
+## v0.4.0 (2024-04-12)
+
+### Feature
+
+* feat(knn_param_optimization): correct function to ensure it works along with test ([`7e1907c`](https://github.com/DSCI-310-2024/pynyairbnb/commit/7e1907c5c6b88549e0702330286d538ae0eb8766))
+
+
 ## v0.3.0 (2024-04-12)
 
 ### Feature
