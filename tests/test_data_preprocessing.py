@@ -253,6 +253,18 @@ def test_data_splitting_proportions(mock_data):
     assert train_len / total_len == pytest.approx(0.8, 0.05)
     assert test_len / total_len == pytest.approx(0.2, 0.05)
 
+
+def test_convert_missing_values_with_none():
+    """Test convert_missing_values with None as input."""
+    result = convert_missing_values(None)
+    assert result is None, "Function should return None for None input."
+
+def test_convert_missing_values_with_empty_dataframe():
+    """Test convert_missing_values with an empty DataFrame as input."""
+    empty_df = pd.DataFrame()
+    result = convert_missing_values(empty_df)
+    assert result.empty, "Function should return an empty DataFrame for empty DataFrame input."
+
 @pytest.fixture
 def setup_mocks(mock_data):
     """
