@@ -19,7 +19,7 @@ from pynyairbnb.data_preprocessing import data_preprocessing
 from pynyairbnb.plotting import plot_pynyairbnb
 from pynyairbnb.pynyairbnb import nyairbnb_analysis
 
-data_preprocessing("example-link-data.csv", "documents/data_files")  # url to your data and path to save your data
+data_preprocessing("example-link-data.csv", "documents/data_files", "./data/raw")  # url to your data and path to save your data
 plot_pynyairbnb("documents/data_files/train_df.csv", "documents/data_figures", "documents/data_tables") # path to data files and output paths to save figures and tables
 nyairbnb_analysis("documents/data_files", "documents/data_tables") # path to data files and output path to save tables
 ```
