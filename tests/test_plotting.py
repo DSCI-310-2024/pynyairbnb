@@ -30,6 +30,7 @@ def test_sns_plotting_output_type():
 def test_sns_plotting_plottype_error():
     """
     Test case to check if an exception is raised when an invalid plot type is provided to sns_plotting function.
+    """
 
     with pytest.raises(Exception):
         result = sns_plotting('barplot', data, 'number_of_reviews', 'price', 20, 10)
