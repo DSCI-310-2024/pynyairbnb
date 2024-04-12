@@ -2,6 +2,17 @@
 
 
 
+## v0.3.0 (2024-04-12)
+
+### Feature
+
+* feat(data_preprocessing.py): add  argument to  function ([`506183e`](https://github.com/DSCI-310-2024/pynyairbnb/commit/506183e7364e17afc75d152eeca2c20df1915555))
+
+### Unknown
+
+* removing unnecessary line; we fixed it. ([`5020ebd`](https://github.com/DSCI-310-2024/pynyairbnb/commit/5020ebd0444e61e0b297fafda76a89ab3578bc76))
+
+
 ## v0.2.0 (2024-04-12)
 
 ### Feature
