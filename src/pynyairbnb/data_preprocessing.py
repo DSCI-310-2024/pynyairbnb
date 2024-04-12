@@ -200,9 +200,6 @@ def add_price_category(data):
     data['price_category'] = categories
     return data
 
-# @click.command()
-# @click.option('--input_path', type=str, default="data/raw/airbnb_data_2023.csv", help='Path to input data')
-# @click.option('--out_dir', type=str, default="data/cleaned", help='Path to write the file')
 def data_preprocessing(input_path, out_dir):
     """Main function orchestrating the data cleaning and preprocessing.
 

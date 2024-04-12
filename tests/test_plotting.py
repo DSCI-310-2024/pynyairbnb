@@ -210,7 +210,6 @@ def test_plot_pynyairbnb(mock_read_csv, mock_data):
         AssertionError: If `Figure.savefig` or `DataFrame.to_csv` functions are not called.
     """
     mock_read_csv.return_value = mock_data
-    from pynyairbnb.plotting import plot_pynyairbnb  # Ensure to import within the test if needed
     plot_pynyairbnb("dummy.csv", "viz_dir", "tbl_dir")
 
     assert savefig_mock.called, "Figure.savefig was not called"
