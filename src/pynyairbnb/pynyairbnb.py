@@ -68,7 +68,6 @@ def build_clf_model(model, preprocessor, tbl_out_dir, X_train, y_train, X_test, 
     predictions = model.predict(X_test)
     
     clf_report = classification_report(y_test, predictions, output_dict=True)
-    #clf_report = dict((replacement_dict[key], value) for (key, value) in clf_report.items())
     clf_report = {replacement_dict.get(key, key): value for (key, value) in clf_report.items()}
     clf_report = pd.DataFrame(clf_report).transpose()
     
