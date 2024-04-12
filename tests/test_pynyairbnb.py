@@ -1,5 +1,6 @@
 import sys
 import os
+import pytest
 from sklearn.dummy import DummyClassifier
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import make_pipeline
@@ -98,3 +99,10 @@ def test_build_clf_model():
 
     os.remove(os.path.join(tbl_out_dir, clf_report_file_name))
     os.rmdir(tbl_out_dir)
+    
+def test_clf_model_inputs():
+    """_summary_
+    Ensures that running the build_clf function function with the incorrect inputs leads to an error
+    """
+    with pytest.raises(ValueError):
+        clf_model = build_clf_model("faulty_value", "faulty_input", "faulty_input", X_train, y_train, X_test, y_test, "test", "test_name")
