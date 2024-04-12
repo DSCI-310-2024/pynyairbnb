@@ -2,7 +2,6 @@ import os
 import pandas as pd
 import pytest
 import warnings
-from unittest.mock import patch, MagicMock, call
 from click.testing import CliRunner
 from pynyairbnb.data_preprocessing import create_dir_if_not_exists, read_data, convert_missing_values, split_data, save_dataframes, add_price_category, data_preprocessing
 
@@ -266,34 +265,36 @@ def test_convert_missing_values_with_empty_dataframe():
     assert result.empty, "Function should return an empty DataFrame for empty DataFrame input."
 
 @pytest.fixture
-def setup_mocks(mock_data):
+def setup_mocks(mocker, mock_data):
     """
     Fixture function that sets up the necessary mocks for data preprocessing tests.
 
     Parameters:
+    - mocker: The pytest-mock mocker fixture.
     - mock_data: The mock data to be used for testing.
 
     Returns:
     - A dictionary containing the mock objects for various functions involved in data preprocessing.
     """
-    with patch('pynyairbnb.data_preprocessing.create_dir_if_not_exists') as mock_create_dir, \
-        patch('pynyairbnb.data_preprocessing.read_data', return_value=mock_data) as mock_read_data, \
-        patch('pynyairbnb.data_preprocessing.convert_missing_values', return_value=mock_data) as mock_convert_missing, \
-        patch('pynyairbnb.data_preprocessing.split_data', return_value=(mock_data, mock_data)) as mock_split_data, \
-        patch('pynyairbnb.data_preprocessing.add_price_category', side_effect=lambda x: x) as mock_add_price_category, \
-        patch('pynyairbnb.data_preprocessing.save_dataframes') as mock_save_dataframes:
-        yield {
-            'mock_create_dir': mock_create_dir,
-            'mock_read_data': mock_read_data,
-            'mock_convert_missing': mock_convert_missing,
-            'mock_split_data': mock_split_data,
-            'mock_add_price_category': mock_add_price_category,
-            'mock_save_dataframes': mock_save_dataframes
-        }
+    mock_create_dir = mocker.patch('pynyairbnb.data_preprocessing.create_dir_if_not_exists')
+    mock_read_data = mocker.patch('pynyairbnb.data_preprocessing.read_data', return_value=mock_data)
+    mock_convert_missing = mocker.patch('pynyairbnb.data_preprocessing.convert_missing_values', return_value=mock_data)
+    mock_split_data = mocker.patch('pynyairbnb.data_preprocessing.split_data', return_value=(mock_data, mock_data))
+    mock_add_price_category = mocker.patch('pynyairbnb.data_preprocessing.add_price_category', side_effect=lambda x: x)
+    mock_save_dataframes = mocker.patch('pynyairbnb.data_preprocessing.save_dataframes')
+    
+    return {
+        'mock_create_dir': mock_create_dir,
+        'mock_read_data': mock_read_data,
+        'mock_convert_missing': mock_convert_missing,
+        'mock_split_data': mock_split_data,
+        'mock_add_price_category': mock_add_price_category,
+        'mock_save_dataframes': mock_save_dataframes
+    }
 
 def test_data_preprocessing(setup_mocks):
     """Tests the orchestration of the data preprocessing pipeline."""
-    from pynyairbnb.data_preprocessing import data_preprocessing  
+    from pynyairbnb.data_preprocessing import data_preprocessing
     # Execute the function
     data_preprocessing('dummy/path/to/data.csv', 'dummy/path/to/output')
     # Verify all steps are called correctly

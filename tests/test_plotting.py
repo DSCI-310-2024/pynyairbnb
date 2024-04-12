@@ -2,7 +2,6 @@ import pandas as pd
 import matplotlib
 import numpy as np
 import pytest
-from unittest.mock import patch, MagicMock
 from pynyairbnb.plotting import sns_plotting, rank_correlations, plot_pynyairbnb
 
 # Same Data to be used for all tests
@@ -186,31 +185,26 @@ def mock_data():
         "neighbourhood_group": ["Manhattan", "Brooklyn", "Queens"]
     })
 
-# Use specific MagicMock objects for savefig and to_csv to clearly control and assert their usage
-savefig_mock = MagicMock()
-to_csv_mock = MagicMock()
-
-@patch("matplotlib.pyplot.Figure.savefig", savefig_mock)
-@patch("pandas.DataFrame.to_csv", to_csv_mock)
-@patch("os.path.join", MagicMock(return_value="mock/path/to/file.csv"))
-@patch("os.makedirs", MagicMock())  # Mock directory creation if necessary
-@patch("pandas.read_csv")
-def test_plot_pynyairbnb(mock_read_csv, mock_data):
+def test_plot_pynyairbnb(mocker, mock_data):
     """
-    Test function for the `plot_pynyairbnb` function in the `pynyairbnb.plotting` module.
+    Test function for plot_pynyairbnb in pynyairbnb.plotting module.
 
     Args:
-        mock_read_csv (MagicMock): Mock object for the `pandas.read_csv` function.
-        mock_data (MagicMock): Mock object for the data to be read from CSV.
+        mocker: Mocking object for patching functions and objects.
+        mock_data: Mock data for testing.
 
     Returns:
         None
-
-    Raises:
-        AssertionError: If `Figure.savefig` or `DataFrame.to_csv` functions are not called.
     """
-    mock_read_csv.return_value = mock_data
+    savefig_mock = mocker.patch("matplotlib.pyplot.Figure.savefig")
+    to_csv_mock = mocker.patch("pandas.DataFrame.to_csv")
+    mocker.patch("os.path.join", return_value="mock/path/to/file.csv")
+    mocker.patch("os.makedirs")  # Mock directory creation if necessary
+    mock_read_csv = mocker.patch("pandas.read_csv", return_value=mock_data)
+    
+    from pynyairbnb.plotting import plot_pynyairbnb
     plot_pynyairbnb("dummy.csv", "viz_dir", "tbl_dir")
 
     assert savefig_mock.called, "Figure.savefig was not called"
     assert to_csv_mock.called, "DataFrame.to_csv was not called"
+
