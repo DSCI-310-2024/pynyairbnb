@@ -11,7 +11,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import RandomizedSearchCV
 from scipy.stats import randint
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+#sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 # from src.function_build_preprocessor import build_preprocessor
 from pynyairbnb.data_preprocessing import create_dir_if_not_exists
 
@@ -97,9 +97,9 @@ def knn_param_optimization(knn_model, tbl_out_dir, X_train, y_train, X_test, y_t
     """
     # KNN Hyperparameter Optimization
     param_dist = {
-        'kneighborsclassifier__n_neighbors': randint(1, 30),
-        'kneighborsclassifier__weights': ['uniform', 'distance'],
-        'kneighborsclassifier__p': [1, 2]  
+        'n_neighbors': randint(1, 30),
+        'weights': ['uniform', 'distance'],
+        'p': [1, 2]  
     }
 
     try:
@@ -117,7 +117,7 @@ def knn_param_optimization(knn_model, tbl_out_dir, X_train, y_train, X_test, y_t
     # Classification Report After Hyperparameter Optimization
     rand_search_predictions = rand_search.predict(X_test)
     hyperparam_clf_report = classification_report(y_test, rand_search_predictions, output_dict=True)
-    hyperparam_clf_report = dict((replacement_dict[key], value) for (key, value) in hyperparam_clf_report.items())
+    hyperparam_clf_report = dict((replacement_dict[key], value) for (key, value) in hyperparam_clf_report.items() if key in replacement_dict)
     hyperparam_clf_report = pd.DataFrame(hyperparam_clf_report).transpose()
 
     # Saving table

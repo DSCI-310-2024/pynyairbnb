@@ -10,6 +10,7 @@ from sklearn.neighbors import KNeighborsClassifier
 import pandas as pd
 from tempfile import TemporaryDirectory
 import numpy as np
+from sklearn.datasets import load_iris
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.datasets import make_classification
@@ -151,3 +152,52 @@ def test_invalid_path():
                         pd.DataFrame({'feature1': [0, 1], 'feature2': [1, 0]}), pd.Series([0, 1]),
                         pd.DataFrame({'feature1': [1, 0], 'feature2': [0, 1]}), pd.Series([1, 0]),
                         {}, 'test_report.csv')
+
+@pytest.fixture
+def iris_data():
+    iris = load_iris()
+    X_train, X_test, y_train, y_test = train_test_split(iris.data, iris.target, test_size=0.2, random_state=42)
+    return X_train, X_test, y_train, y_test
+
+def test_knn_param_optimization(iris_data, tmpdir):
+    X_train, X_test, y_train, y_test = iris_data
+    knn_model = KNeighborsClassifier()
+    output_dir = str(tmpdir.mkdir("output"))  # Converting to string because tmpdir is a py.path
+    try:
+        knn_param_optimization(knn_model, output_dir, X_train, y_train, X_test, y_test, {})
+        assert os.path.isfile(os.path.join(output_dir, "hyperparam_classification_report.csv"))
+    except Exception as e:
+        pytest.fail(f"knn_param_optimization raised an unexpected exception: {e}")
+
+# Define test data directory
+TEST_DATA_DIR = 'docs/sample_data'
+
+@pytest.fixture
+def input_data(tmpdir):
+    """Fixture to provide test input data."""
+    # Create temporary directory
+    tmp_input_dir = tmpdir.mkdir('input')
+    
+    # Copy test data files to temporary directory
+    test_data_files = ['X_train.csv', 'y_train.csv', 'X_test.csv', 'y_test.csv']
+    for file in test_data_files:
+        src_path = os.path.join(TEST_DATA_DIR, file)
+        dst_path = os.path.join(tmp_input_dir, file)
+        os.system(f'cp {src_path} {dst_path}')
+    
+    return tmp_input_dir
+
+@pytest.fixture
+def input_data(tmpdir):
+    """Fixture to provide test input data."""
+    # Create temporary directory
+    tmp_input_dir = tmpdir.mkdir('input')
+    
+    # Copy test data files to temporary directory
+    test_data_files = ['X_train.csv', 'y_train.csv', 'X_test.csv', 'y_test.csv']
+    for file in test_data_files:
+        src_path = os.path.join(TEST_DATA_DIR, file)
+        dst_path = os.path.join(tmp_input_dir, file)
+        os.system(f'cp {src_path} {dst_path}')
+    
+    return tmp_input_dir
