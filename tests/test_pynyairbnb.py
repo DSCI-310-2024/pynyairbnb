@@ -8,6 +8,7 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.neighbors import KNeighborsClassifier
 import pandas as pd
+from tempfile import TemporaryDirectory
 import numpy as np
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
@@ -106,3 +107,60 @@ def test_clf_model_inputs():
     """
     with pytest.raises(ValueError):
         clf_model = build_clf_model("faulty_value", "faulty_input", "faulty_input", X_train, y_train, X_test, y_test, "test", "test_name")
+        
+def test_empty_datasets():
+    """_summary_
+    Ensures that if model is run with empty data sets run an error
+    """
+    with TemporaryDirectory() as temp_dir:
+        with pytest.raises(ValueError):
+            build_clf_model(KNeighborsClassifier(), StandardScaler(), temp_dir, 
+                            pd.DataFrame(), pd.Series(), pd.DataFrame(), pd.Series(),
+                            {}, 'test_report.csv')
+
+def test_invalid_data_types():
+    """_summary_
+    Tests that model runs error if invalid datatypes are entered
+    """
+    with TemporaryDirectory() as temp_dir:
+        with pytest.raises(TypeError):
+            build_clf_model(KNeighborsClassifier(), StandardScaler(), temp_dir, 
+                            [0, 1], [0, 1], [1, 0], [1, 0],
+                            {}, 'test_report.csv')
+
+def test_data_with_missing_values():
+    """_summary_
+    Ensures function can work despite missing values 
+    """
+    X_train = pd.DataFrame({'feature1': [np.nan, 1], 'feature2': [1, 0]})
+    y_train = pd.Series([0, 1])
+    X_test = pd.DataFrame({'feature1': [1, 0], 'feature2': [0, 1]})
+    y_test = pd.Series([1, 0])
+    with TemporaryDirectory() as temp_dir:
+        # Assuming the function should handle NaNs, replace assert with appropriate logic
+        build_clf_model(KNeighborsClassifier(), StandardScaler(), temp_dir, 
+                        X_train, y_train, X_test, y_test,
+                        {}, 'test_report.csv')
+
+def test_invalid_path():
+    """_summary_
+    Ensures file not found error is raised if an invalid file path is input 
+    """
+    with pytest.raises(FileNotFoundError):
+        build_clf_model(KNeighborsClassifier(), StandardScaler(), '/invalid/path', 
+                        pd.DataFrame({'feature1': [0, 1], 'feature2': [1, 0]}), pd.Series([0, 1]),
+                        pd.DataFrame({'feature1': [1, 0], 'feature2': [0, 1]}), pd.Series([1, 0]),
+                        {}, 'test_report.csv')
+
+
+
+def test_empty_replacement_dict():
+    """_summary_
+    Tests that empty dictionary does not create an error
+    """
+    with TemporaryDirectory() as temp_dir:
+        model = build_clf_model(KNeighborsClassifier(), StandardScaler(), temp_dir, 
+                                pd.DataFrame({'feature1': [0, 1], 'feature2': [1, 0]}), pd.Series([0, 1]),
+                                pd.DataFrame({'feature1': [1, 0], 'feature2': [0, 1]}), pd.Series([1, 0]),
+                                {}, 'test_report.csv')
+        assert isinstance(model, KNeighborsClassifier)
