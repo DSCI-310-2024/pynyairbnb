@@ -4,35 +4,6 @@ A package for DSCI 310 Group's Airbnb Analysis.
 
 [![codecov](https://codecov.io/gh/DSCI-310-2024/pynyairbnb/graph/badge.svg?token=duRYHnZQ12)](https://codecov.io/gh/DSCI-310-2024/pynyairbnb)
 
-
-Due to the amount of functions we created for our project, we are not successfully able to achieve a high code coverage score. For our main repository, we have tested all functions in our repository. However, for our package repository, we have only provided test functions for functions that we believe to be the most crucial for our package. We have also spoken to the professor about our issue, and she has approved our request of submitting our project with the given code coverage score. Below, we have listed the functions that we have specifically worked on for milestone 4:
-
-### Functions tested in - DSCI-310-2024/DSCI_310_Group_9_NY-airbnb-analysis/src:
-
-- `add_price_category(data)`
-- `build_preprocessor(numerical_data, text_data, categorical_data)`
-- `build_clf_model(model, preprocessor, tbl_out_dir, X_train, y_train, X_test, y_test, replacement_dict, clf_report_file_name)`
-- `knn_param_optimization(knn_model, tbl_out_dir, X_train, y_train, X_test, y_test, replacement_dict, output_file_name, param_dist)`
-- `main(input_dir, tbl_out_dir)`
-
-### Functions tested in DSCI-310-2024\pynyairbnb/src:
-
-**data_preprocessing.py** 
-- `create_dir_if_not_exists(directory)`
-- `read_data(data_url, out_dir)`
-- `convert_missing_values(data)`
-- `split_data(data)`
-- `save_dataframes(out_dir, train_df, test_df)`
-- `add_price_category(data)`
-- `data_preprocessing(input_path, out_dir)`
-
-**plotting.py**
-- `sns_plotting(plot_type, data, x='number_of_reviews', y='price', figlength=14, figheight=7)`
-- `build_preprocessor(numerical_data, text_data, categorical_data)`
-- `build_clf_model(model, preprocessor, tbl_out_dir, X_train, y_train, X_test, y_test, replacement_dict, clf_report_file_name)`
-- `knn_param_optimization(knn_model, tbl_out_dir, X_train, y_train, X_test, y_test, replacement_dict)`
-
-
 ## Installation
 
 ```bash
