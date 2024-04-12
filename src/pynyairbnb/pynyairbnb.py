@@ -79,6 +79,22 @@ def build_clf_model(model, preprocessor, tbl_out_dir, X_train, y_train, X_test, 
 
     
 def knn_param_optimization(knn_model, tbl_out_dir, X_train, y_train, X_test, y_test,replacement_dict):
+    """_summary_
+    Performs Hyperparameter optimization for KNN model 
+    Args:
+        knn_model (_type_): KNN Model Built with Sklearn Library 
+        tbl_out_dir (_type_): Data Input
+        X_train (_type_): training data input features
+        y_train (_type_): training data target variable
+        X_test (_type_): testing data input features
+        y_test (_type_): testing data target variable
+        replacement_dict (_type_): Dictionary with proper Formatting for classification report 
+        output_file_name (str): The name to save the output as, will be a .csv file 
+        
+        
+    Output:
+    Saves output of model to csv file defined in output_file_name
+    """
     # KNN Hyperparameter Optimization
     param_dist = {
         'kneighborsclassifier__n_neighbors': randint(1, 30),

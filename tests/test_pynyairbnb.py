@@ -33,6 +33,10 @@ def test_transformer_assignment():
     assert transformers.get('countvectorizer') == CountVectorizer
 
 def test_preprocessor():
+    """_summary_
+    Tests the functionality of build preprocessor method
+    
+    """
     # Create an artificial dataset
     np.random.seed(0)  # For reproducibility
     data = pd.DataFrame({
@@ -73,6 +77,9 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 
 
 def test_build_clf_model():
+    """_summary_
+    Tests the build clf model and ensures output file is correctly created
+    """
     preprocessor = StandardScaler()
     model = KNeighborsClassifier()
     tbl_out_dir = "./test_outputs"
