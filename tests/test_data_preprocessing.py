@@ -294,12 +294,11 @@ def setup_mocks(mocker, mock_data):
 
 def test_data_preprocessing(setup_mocks):
     """Tests the orchestration of the data preprocessing pipeline."""
-    from pynyairbnb.data_preprocessing import data_preprocessing
     # Execute the function
-    data_preprocessing('dummy/path/to/data.csv', 'dummy/path/to/output')
+    data_preprocessing('dummy/path/to/data.csv', 'dummy/path/to/output', 'dummy/path/to/raw')
     # Verify all steps are called correctly
     setup_mocks['mock_create_dir'].assert_called_once_with('dummy/path/to/output')
-    setup_mocks['mock_read_data'].assert_called_once_with('dummy/path/to/data.csv', 'dummy/path/to/output')
+    setup_mocks['mock_read_data'].assert_called_once_with('dummy/path/to/data.csv', 'dummy/path/to/raw')
     setup_mocks['mock_convert_missing'].assert_called_once()
     setup_mocks['mock_split_data'].assert_called_once()
     setup_mocks['mock_save_dataframes'].assert_called_once()

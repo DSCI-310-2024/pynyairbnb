@@ -200,7 +200,7 @@ def add_price_category(data):
     data['price_category'] = categories
     return data
 
-def data_preprocessing(input_path, out_dir):
+def data_preprocessing(input_path, out_dir, raw_dir="./data/raw"):
     """Main function orchestrating the data cleaning and preprocessing.
 
     Reads data from a specified input path, performs cleaning operations including filling missing values and converting data types, splits the data into training and testing datasets, adds a 'price_category' column based on predefined price ranges, and saves the processed datasets to the specified output directory.
@@ -211,6 +211,8 @@ def data_preprocessing(input_path, out_dir):
         Path to input data file.
     out_dir : str
         Path to directory where processed files will be saved.
+    raw_dir : str
+        Path to directory where raw data file will be saved.
 
     Returns
     -------
@@ -218,12 +220,12 @@ def data_preprocessing(input_path, out_dir):
 
     Examples
     --------
-    >>> data_preprocessing('data/raw/airbnb_data_2023.csv', 'data/processed')
+    >>> data_preprocessing('data/raw/airbnb_data_2023.csv', 'data/processed', 'data/raw')
     # Reads the raw data, processes it, and saves the processed data into the 'data/processed' directory.
     """
     create_dir_if_not_exists(out_dir)
 
-    data = read_data(input_path, out_dir)
+    data = read_data(input_path, raw_dir)
     data = convert_missing_values(data)
     train_df, test_df = split_data(data)
     train_df = add_price_category(train_df)
